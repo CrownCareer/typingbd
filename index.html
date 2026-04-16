@@ -1,1305 +1,264 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8">
-<title>Dashboard - TypingBD</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" type="image/png" href="images/logo.png">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-    .terms-btn {display: inline-block; padding: 10px 20px; border-radius: 30px; font-weight: 600; text-decoration: none; color: #fff; background: linear-gradient(270deg, #ff6b6b, #fbc531, #4cd137, #00a8ff, #9c88ff); background-size: 1000% 1000%; transition: transform 0.3s, box-shadow 0.3s; animation: gradientAnimation 8s ease infinite; font-size: 14px; margin-left: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-    @keyframes gradientAnimation {0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .terms-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;} @font-face {font-family: 'Poppins'; src: url('../Font/Poppins.ttf') format('truetype'); font-weight: normal; font-display: swap;}
-    body{background:linear-gradient(135deg,#ffffff,#ffffff);color:#222;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;}
-    .top{background:rgba(255,255,255,0.9);border-bottom:1px solid #ddd;color:#333;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;box-shadow:0 4px 8px rgba(0,0,0,0.05);}
-    .top-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-    .top h1{font-size:20px;font-weight:600;}
-    .pin-badge{color:#fff;background: linear-gradient(90deg, #51a800, #7622b5);padding:4px 10px;border-radius:20px;font-weight:600;font-size:13px;}
-    .status{font-size:12px;padding:6px 12px;border-radius:30px;font-weight:600;text-transform:uppercase;}
-    .active{background:#00822f;color:#ffffff;border:1px solid #97e0b8;}
-    .hold{background:#fff3e0;color:#f57c00;border:1px solid #f9c784;}
-    .inactive{background:#ffecec;color:#d33;border:1px solid #f5b3b3;}
-    .suspend{background:#f54d4d;color:#ffffff;border:1px solid #ff7a7a;}
-    .inactive-msg{font-size:13px;margin-left:8px;color:#0000c4;}
-    .nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-    .dropdown{position:relative;display:inline-block;}
-    .dropbtn{background:#f0f3f8;color:#333;border:none;padding:9px 14px;border-radius:30px;font-weight:600;cursor:pointer;transition:0.3s;}
-    .dropbtn:hover{background:#007bff;color:#fff;}
-    .dropdown-content{display:none;position:absolute;right:0;top:calc(100% + 10px);background:#fff;border:1px solid #ddd;min-width:225px;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:10;overflow:visible;}
-    .dropdown-content a{color:#333;padding:10px 14px;text-decoration:none;display:block;font-size:14px;}
-    .dropdown-content a:hover{background:#007bff;color:#fff;}
-    .nav a.logout{background:#f0f3f8;color:#333;text-decoration:none;padding:9px 14px;border-radius:30px;font-weight:600;transition:0.3s;}
-    .nav a.logout:hover{background:#dc3545;color:#fff;}
-    .content{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 5px; margin-bottom: 20px;}
-    .cards{display:flex;flex-wrap:wrap;justify-content:center;gap:30px;margin-top:20px; margin-bottom: 20px;}
-    .cards {display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px;}
-    .card {background: linear-gradient(145deg, #f2f2f2, #f1f3f6); border-radius: 20px; width: 300px; padding: 25px 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; text-align: center; position: relative; overflow: hidden;}
-    .card::before {content: ''; position: absolute; width: 120%; height: 120%; top: -10%; left: -10%; background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(0,123,255,0.1), rgba(255,255,255,0.3)); transform: rotate(15deg); transition: all 0.5s ease; pointer-events: none;}
-    .card:hover::before {transform: rotate(0deg);}
+    <meta charset="UTF-8">
+    <title>Official Typing Exam System - Final</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { --blue: #0056b3; --green: #28a745; --red: #dc3545; --bg: #f4f7f6; --teal: #17a2b8; }
+        html, body { height: 100%; margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); overflow-x: hidden; }
+        .container { display: flex; flex-direction: column; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .box { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 10px; }
+        .hidden { display: none !important; }
+        
+        .auth-card { max-width: 400px; margin: 50px auto; text-align: center; border-top: 5px solid var(--blue); }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn-main { background: var(--blue); color: white; padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
+        .msg { font-size: 13px; margin: 10px 0; padding: 8px; border-radius: 4px; display: none; }
+        .msg-err { background: #f8d7da; color: #721c24; }
+        .msg-ok { background: #d4edda; color: #155724; }
 
-    .card:hover {transform: translateY(-12px); box-shadow: 0 15px 35px rgba(0,0,0,0.15), 0 6px 18px rgba(0,0,0,0.08);}
-    .card{background:#fff;border:1px solid #ddd;padding:26px 22px;border-radius:16px;width:300px;box-shadow:0 8px 20px rgba(0,0,0,0.05);transition:0.3s;text-align:center; position: relative;}
-    .card:hover{transform:translateY(-8px);box-shadow:0 12px 28px rgba(0,0,0,0.1);}
-    .card h2{color:#007bff;font-size:20px;margin-bottom:8px;}
-    .card p{color:#555;margin-bottom:10px;}
-    .card a{text-decoration:none;background:#0caff5;color:#fff;padding:10px 18px;border-radius:30px;display:inline-block;font-weight:600;transition:0.3s;}
-    .card a:hover{background:#0056b3;}
-    .status-dot {position: absolute; bottom: 8px; right: 8px; width: 12px; height: 12px; background-color: #6AC259; border-radius: 50%;}
-    .card .english-btn{background: #fa4ddd;}
-    .card .english-btn:hover{background: #f71981;}
-    .card .bangla-btn{background: #55e30e;}
-    .card .bangla-btn:hover{background: #459cff;}
-    .card .weeklystart-btn{background: #55e30e;}
-    .card .weeklystart-btn:hover{background: #f71981;}
-    .card .weeklyresult-btn{background: #fa4ddd;}
-    .card .weeklyresult-btn:hover{background: #f71981;}
-    .card .instruction-btn{background: #55e30e;}
-    .card .instruction-btn:hover{background: #f71981;}
-    .card .english-btn-3{background: #0dc400;}
-    .card .english-btn-3:hover{background: #f71981;}
-    .card .bangla-btn-3{background: #0c1896;}
-    .card .bangla-btn-3:hover{background: #459cff;}
-    .card .givestart-btn{background: #858384;}
-    .card .givestart-btn:hover{background: #f71981;}
-    .disabled{pointer-events:none;opacity:0.5;text-decoration:line-through;}
-    footer{text-align:center;padding:15px;font-size:14px;color:#555;background:#f8f9fb;border-top:1px solid #ddd;}
-    footer span{color:#007bff;font-weight:600;}
-    #popupModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;}
-    #popupModal img{max-width:90%;max-height:80%;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-    #popupModal .close{position:absolute;top:20px;right:30px;font-size:28px;color:#fff;cursor:pointer;font-weight:bold;}
-    @media(max-width:768px){.top{flex-direction:column;align-items:stretch;gap:12px;text-align:center;}.card{width:90%;}}
-    .content { padding-top: 30px; justify-content: flex-start; }
-    .cards { margin-top: 10px; }
-    .hide-on-suspend { display: none !important; }
-    .support-btn {position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #42e4ed, #2111fa); color: #fff; border: none; border-radius: 50px; padding: 14px 18px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 999; transition: all 0.3s ease;}
-    .support-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
-    .leaderboard-btn {position: fixed; bottom: 25px; right: 170px; color: #fff; border: none; border-radius: 50px; padding: 14px 18px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 999; transition: all 0.5s ease; text-decoration: none; background: linear-gradient(90deg, #aa0ce8, #ff0073, #aeff00); background-size: 300% 100%; animation: liveGradient 4s ease infinite;}
-    .leaderboard-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.5); animation-play-state: paused; }
-    @keyframes liveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    .support-popup {display: none; position: fixed; bottom: 80px; right: 25px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); padding: 15px 20px; z-index: 1000; width: 220px; animation: fadeIn 0.3s ease;}
-    .support-popup h4 { margin: 0 0 8px; font-size: 16px; color: #222; font-weight: 600; text-align: center; }
-    .support-popup a { display: block; text-decoration: none; color: #fff; padding: 10px; margin: 6px 0; border-radius: 8px; font-weight: 500; text-align: center; transition: 0.3s; }
-    .support-popup a.whatsapp { background: #25D366; }
-    .support-popup a.telegram { background: #0088cc; }
-    @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
-    .top-left h1 { display: inline-block; color: #FF5722; font-family: 'Arial', sans-serif; font-size: 20px; padding: 5px 10px; background: #FFF3E0; border-radius: 5px; }
-    .dropdown-content a {display: flex; align-items: center; gap: 10px; padding: 8px 12px; text-decoration: none; color: #333;}
-    .dropdown-content a img {width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.15);}
-    @media (max-width: 600px) {
-    body {font-size: 14px;}
-    .top {padding: 12px 15px; gap: 10px;}
-    .top-left {justify-content: center; gap: 8px;}
-    .top h1 {font-size: 18px;}
-    .nav {justify-content: center; gap: 8px;}
-    .dropbtn,
-    .nav a.logout {padding: 8px 12px; font-size: 13px;}
-    .dropdown-content {min-width: 200px; right: 50%; transform: translateX(50%);}
-    .dropdown-content a {font-size: 13px; padding: 10px;}
-    .dropdown-content a img {width: 30px; height: 30px;}
-    .content {padding: 25px 15px;}
-    .cards {gap: 18px;}
-    .card {width: 100%; max-width: 330px; padding: 22px 18px;}
-    .card h2 {font-size: 18px;}
-    .card p {font-size: 14px;}
-    .card a {padding: 9px 16px; font-size: 14px;}
-    .support-btn {bottom: 20px; right: 20px; padding: 12px 16px; font-size: 13px;}
-    .leaderboard-btn {bottom: 20px; right: 140px; padding: 12px 16px; font-size: 13px;}
-    .support-popup {width: 200px; right: 20px;}
-    footer {font-size: 13px; padding: 12px;} }
+        .result-header { color: #004085; text-align: center; font-size: 24px; margin-bottom: 20px; font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .card { padding: 12px; border: 1px solid #ddd; background: #fff; border-radius: 8px; font-size: 14px; }
+        .card h4 { margin: -12px -12px 10px -12px; padding: 10px; font-size: 15px; border-radius: 8px 8px 0 0; border-bottom: 1px solid #eee; }
+        .c-green h4 { color: #28a745; background: #f8fff9; }
+        .c-orange h4 { color: #d35400; background: #fffaf0; }
+        .c-red h4 { color: #dc3545; background: #fff5f5; }
+        .card p { margin: 10px 0; display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding-bottom: 5px;}
+        .status-banner { background: var(--teal); color: white; text-align: center; padding: 15px; border-radius: 8px; font-size: 22px; font-weight: bold; margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 20px;}
+        .status-tag { background: white; color: var(--green); padding: 5px 25px; border-radius: 5px; }
 
-    .trial-btn.disabled{cursor:not-allowed;}
-    .profile-avatar{width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 3px solid #156fe6; cursor: pointer;}
-    .layout{display:flex; min-height: calc(100vh - 70px);}
-    .sidebar{width:260px; background: linear-gradient(180deg,#1e3c72,#2a5298); padding:20px 15px; box-shadow: 5px 0 20px rgba(0,0,0,0.15); position: sticky; top: 70px;}
-    .main-content{flex:1; padding: 0;}
-    .sidebar-menu{list-style:none; padding:0; margin:0;}
-    .sidebar-menu li{margin-bottom:10px;}
-    .sidebar-menu a{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 15px; border-radius:12px; color:#fff; font-weight:600; text-decoration:none; transition:all 0.3s ease; background: rgba(255,255,255,0.08); backdrop-filter: blur(8px);}
-    .sidebar-menu a span{flex:1; text-align:left;}
-    .sidebar-menu a:hover{background: linear-gradient(90deg,#00dbde,#fc00ff); transform: translateX(6px); box-shadow: 0 5px 15px rgba(0,0,0,0.25);}
-    .sidebar-menu a.active {background: linear-gradient(90deg,#cadade,#1e3c72); transform: translateX(6px); box-shadow: 0 5px 15px rgba(0,0,0,0.25); color: white; border: 0px; display: block; transition: 0.3s;}
-    .sub-menu{list-style:none; padding-left:15px; margin-top:6px; display:none; animation: slideDown 0.3s ease;}
-    .sub-menu li a{font-size:14px; background: rgba(255,255,255,0.15);}
-    .sub-menu li a:hover{background:#00c6ff;}
-    @keyframes slideDown{from{opacity:0; transform:translateY(-5px);} to{opacity:1; transform:translateY(0);}}
+        #passage-stable { font-size: 24px; line-height: 1.8; height: 280px; overflow-y: auto; text-align: justify; user-select: none; margin-bottom: 20px; }
+        .input-box { border: 2px solid var(--blue); border-radius: 8px; padding: 15px; background: #fff; margin-top: 10px; }
+        textarea { width: 100%; height: 110px; font-size: 20px; border: none; outline: none; resize: none; font-family: inherit; }
 
-    @media(max-width:900px){
-    .sidebar{display:none;}}
-    .sidebar-disabled{opacity: 0.4; pointer-events: none; filter: grayscale(100%);}
-    .side-menu-wrapper {position: relative;}
-    .main-item {display: flex; align-items: center; padding: 12px 15px; text-decoration: none; color: #333; transition: background 0.3s; border-bottom: 1px solid #f0f0f0;}
-    .main-item:hover {background-color: #f9f9f9;}
-    .main-item img {width: 24px; margin-right: 12px;}
-    .right-arrow {margin-left: auto; font-size: 10px; color: #bbb;}
-    .side-package-bar {visibility: hidden; opacity: 0; position: absolute; left: 100%; top: 0; width: 250px; background: #ffffff; border-radius: 0 8px 8px 0; box-shadow: 10px 5px 20px rgba(0,0,0,0.1); border: 1px solid #eee; transform: translateX(10px); transition: all 0.3s ease; z-index: 9999;}
-    .side-menu-wrapper:hover .side-package-bar { visibility: visible; opacity: 1; transform: translateX(0);}
-    .side-menu-wrapper:nth-of-type(1) .side-header {background-color: #1889e6; color: #ffffff;}
-    .side-menu-wrapper:nth-of-type(2) .side-header {background-color: #41a145; color: #ffffff;}
-    .side-menu-wrapper:nth-of-type(3) .side-header {background-color: #0a167a; color: #ffffff;}
-    .side-header {text-align: center; padding: 10px 5px; font-size: 14px; font-weight: bold; border-radius: 5px 5px 0 0; margin-bottom: 5px;}
-    .side-package-bar a {display: flex; align-items: center; padding: 10px 15px; text-decoration: none; color: #555; font-size: 14px; border-bottom: 1px solid #f9f9f9; gap: 10px;}
-    .side-package-bar a img {width: 35px; height: 35px; object-fit: contain; display: block;}
-    .side-package-bar a:hover {background-color: #fff0f6; color: #e2136e; padding-left: 20px;}
-    .status-container {display: flex; margin: 0px 0;}
-    .expiry-chip {display: flex; align-items: center; padding: 1px 4px; border-radius: 12px; font-family: 'Segoe UI', Roboto, sans-serif; gap: 0px; border: 1px solid rgba(0,0,0,0.05); background: #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
-    .expiry-chip.normal {background: linear-gradient(145deg, #ffffff, #f0f7ff); color: #0056b3; border-left: 4px solid #007bff;}
-    .expiry-chip.urgent {background: linear-gradient(145deg, #ffffff, #fff5f5); color: #c62828; border-left: 4px solid #ff4b4b; animation: shake 0.5s ease-in-out infinite alternate;}
-    .chip-icon {display: flex; align-items: center; opacity: 0.7;}
-    .chip-content {display: flex; align-items: center; gap: 8px; font-size: 14px;}
-    .label {font-weight: 500; opacity: 0.8;}
-    .date-text {font-weight: 700;}
-    .status-badge {display: inline-flex; align-items: center; background: rgba(0,0,0,0.05); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 5px;}
-    .expiry-chip.urgent .status-badge {background: #ff4b4b; color: white;}
-    .pulse-dot {width: 6px; height: 6px; background-color: currentColor; border-radius: 50%; margin-right: 6px; animation: pulse 1.5s infinite;}
-    @keyframes pulse {0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); }}
-    @keyframes shake {from { transform: translateX(0); } to { transform: translateX(2px); }}
-    .custom-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-top: 1px solid #e5e7eb; padding-top: 12px; font-family: sans-serif;}
-    @media (max-width: 768px) {
-    .custom-container {display: flex; flex-direction: column; gap: 10px; text-align: center;}
-    .custom-container div:first-child {display: none;}
-    .custom-container div:last-child {text-align: center !important;}}
-    .pin-container {justify-content: space-between; align-items: center; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 10px; margin:px; border-radius: 8px; text-align: center; border: 1px dashed #4A90E2;}
-    .pin-label {font-size: 14px; color: #666; font-weight: bold; margin-bottom: 4px; letter-spacing: 1px;}
-    .pin-badge-v1 {display: inline-block; background: #4A90E2; color: white; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); letter-spacing: 2px;} }
-    .premium-card { position: relative; background: linear-gradient(145deg, #ffffff, #f5f7fa); border-radius: 18px; padding: 25px 20px; width: 260px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: all 0.3s ease; overflow: hidden; }
-    .premium-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 15px 35px rgba(0,0,0,0.12); }
-    .premium-card h2 { font-size: 20px; margin-bottom: 8px; color: #222; }
-    .premium-card p { font-size: 14px; color: #666; margin-bottom: 15px; }
-    .btn-group { display: flex; justify-content: center; gap: 10px; }
-    .bangla-btn, .english-btn { flex: 1; padding: 8px 10px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.3s; }
-    .bangla-btn { background: linear-gradient(135deg, #00b09b, #96c93d) !important; color: #fff; }
-    .bangla-btn:hover {transform: scale(1.05);}
-    .english-btn {background: linear-gradient(135deg, #2193b0, #60bcd1) !important; color: #fff;}
-    .english-btn:hover {transform: scale(1.05);}
-    .disabled { pointer-events: none; opacity: 0.6; filter: blur(0.1px); cursor: not-allowed; }
-    .disabled:hover { transform: none !important; }
-    .card-title { display: flex; justify-content: space-between; align-items: center; font-size: 18px; margin-bottom: 8px;}
-    .title-text { font-weight: 400; font-size: 15px; color: #111;  }
-    .title-time {font-size: 15px; font-weight: 600; color: #ff5722; background: rgba(255, 87, 34, 0.1); padding: 4px 8px; border-radius: 12px;}
-</style>
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .edit-btn { background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .error-highlight { background-color: #ffcccc; color: #cc0000; text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <div class="top">
-        <div class="top-left">
-            
-<div style="display: flex; align-items: center; gap: 10px;">
-    <a href="profile_image.php" 
-       style="text-decoration:none; pointer-events: none; cursor: default;"
-       onclick="return false;">
-        
-        <img src="pay_image/profile.png" 
-             class="profile-avatar" 
-             alt="Profile Image"
-             style="display: block; opacity: 1;"> </a>
 
-            <a href="profile_image.php" 
-           class="disabled" onclick="return false;" 
-           style="text-decoration:none; color: red; font-size: 14px;">
-            Set your profile picture
-        </a>
+<div class="container">
+    <div id="page-login" class="box auth-card">
+        <h2 style="color: var(--blue);">লগইন করুন</h2>
+        <input type="text" id="login-user" placeholder="Gmail (ইউজারনেম)">
+        <input type="password" id="login-pass" placeholder="পাসওয়ার্ড">
+        <button class="btn-main" onclick="doLogin()">লগইন</button>
+        <p><a href="#" onclick="showPage('page-recover')">পাসওয়ার্ড ভুলে গেছেন?</a></p>
+        <p>অ্যাকাউন্ট নেই? <a href="#" onclick="showPage('page-signup')">রেজিস্ট্রেশন করুন</a></p>
+        <hr><button onclick="showPage('page-admin-auth')" style="background:none; border:none; color:silver; cursor:pointer; font-size:10px;">Admin</button>
     </div>
-            
-            <span class="status hold">HOLD</span>
 
-                                                <span class="inactive-msg" style="color:#f57c00;">⚠️ Pay to Active your account</span>
-                
-                                    </div>
+    <div id="page-recover" class="box auth-card hidden">
+        <h2 style="color: var(--blue);">পাসওয়ার্ড উদ্ধার</h2>
+        <input type="text" id="recover-email" placeholder="আপনার নিবন্ধিত Gmail দিন">
+        <button class="btn-main" onclick="doRecover()">পাসওয়ার্ড দেখুন</button>
+        <button onclick="showPage('page-login')" style="margin-top:10px; border:none; background:none; color:gray; cursor:pointer;">লগইন পেজে ফিরুন</button>
+    </div>
 
-        <div class="nav">
-            
-            <div class="dropdown">
-                <button class="dropbtn" onclick="toggleDropdown(this)">💵 Pay & Active ▾</button>
-                
-
-<div class="dropdown-content" aria-hidden="true">
-    <a href="/pay_active_section/">
-        <img src="pay_image/active.png" alt="Pay & Active">
-        Account Active করুন
-    </a>
-
-</div>
-            </div>
-            
-                        <div class="dropdown">
-                <button class="dropbtn" onclick="toggleDropdown(this)">
-        <img src="pay_image/profile.png" 
-             alt="Profile" 
-             style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 5px;">
-        Profile ▾
-    </button>
-                <div class="dropdown-content" aria-hidden="true">
-
-                                <div class="pin-container">
-    <span class="pin-label">TYPE CODE</span>
-    <span class="pin-badge-v1">142595</span>
-</div>
-        
-        <a href="profile.php" class="disabled" onclick="return false;" style="text-decoration:none;">
-        <img src="pay_image/profile.png" 
-             class="profile-avatar" 
-             alt="Profile Image">
-            My Profile Details
-    </a>
-
-
-    <a href="transaction_history.php">
-        <img src="pay_image/transaction.png" alt="reset">
-        Transactions History
-        </a>
-
-
-    <a href="javascript:void(0)" style="color: gray; cursor: not-allowed;">
-    <img src="pay_image/settings.png" alt="reset" style="opacity: 0.5;">
-    Advanced Setting
-</a>
-
-
-       <a href="reset_password.php">
-        <img src="pay_image/reset_pass.png" alt="reset">
-        Reset Password
-        </a>
-
-        <a href="logout.php">
-        <img src="pay_image/Logout.png" alt="Logout">
-        Logout
-        </a>
-
-                </div>
-            </div>
-            
-            <a class="terms-btn" href="#" onclick="showTerms(); return false;">T&Co.</a>
-
-            <div id="termsModal" onclick="hideTerms()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;">
-    <span class="close" onclick="hideTerms(); event.stopPropagation();" style="position:absolute;top:20px;right:30px;font-size:28px;color:#fff;cursor:pointer;font-weight:bold;">&times;</span>
-    <img src="terms/terms.png" alt="Terms & Conditions" style="max-width: 95vw; max-height: 95vh; border-radius: 20px; width: auto; height: auto; display: block;"> 
-</div>
-
+    <div id="page-signup" class="box auth-card hidden">
+        <h2 style="color: var(--green);">রেজিস্ট্রেশন</h2>
+        <div id="sign-inputs">
+            <input type="text" id="sign-name" placeholder="আপনার নাম">
+            <input type="text" id="sign-user" placeholder="Gmail (English Only)">
+            <input type="password" id="sign-pass" placeholder="পাসওয়ার্ড (নূন্যতম ৬ অক্ষর)">
+            <button class="btn-main" style="background: var(--green);" onclick="doSignup()">ভেরিফিকেশন কোড পাঠান</button>
         </div>
-    </div>
-    <div class="layout">
-
-        <aside class="sidebar sidebar-disabled" id="sidebar">
-
-        <ul class="sidebar-menu">
-
-            <li>
-    <a href="dashboard.php" class="active" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 10px;">
-        <div style="display: inline-flex; align-items: center; background-color: #ffffff; border: 1px solid #ffffff; padding: 1px 10px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Segoe UI', Arial, sans-serif;">
-    <span style="font-weight: 800; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">
-        <span style="color: #007bff;">TYPING</span><span style="color: #0d0112;">BD</span>
-    </span>
-</div>
-        <div id="network-status" style="background: #6c757d; color: white; padding: 2px 10px; border-radius: 50px; font-size: 10px; font-weight: bold; text-transform: uppercase; min-width: 65px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            Checking
+        <div id="verify-div" class="hidden">
+            <p style="font-size:12px; color:var(--blue);">আপনার জিমেইলে ৪ ডিজিটের কোড পাঠানো হয়েছে।</p>
+            <input type="text" id="verify-code" placeholder="৪ ডিজিটের কোডটি দিন">
+            <button class="btn-main" style="background: var(--teal);" onclick="verifyAndFinish()">ভেরিফাই ও সাইন আপ</button>
         </div>
-    </a>
-</li>
+        <p><a href="#" onclick="showPage('page-login')">লগইন করুন</a></p>
+    </div>
 
-<li class="has-sub">
-  <center>
-  <b style="color: white; padding: 0px 5px; border-radius: 5px;">
-    সাপ্তাহিক লিখিত ও MCQ
-  </b>
-</center>
+    <div id="page-admin-auth" class="box auth-card hidden">
+        <h2 style="color: var(--blue);">Admin Login</h2>
+        <input type="password" id="admin-entry-pass" placeholder="এডমিন পাসওয়ার্ড দিন">
+        <button class="btn-main" onclick="checkAdminAccess()">প্রবেশ করুন</button>
+        <button onclick="showPage('page-login')" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">ফিরে যান</button>
+    </div>
 
-            <li class="has-sub">
-                <a href="javascript:void(0)" onclick="toggleSideDropdown(this)" style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/results_icon.png" alt="Results" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>My Results Area</span> <i>▾</i>
-             </a>
-                <ul class="sub-menu">
-                    <li><a href="results.php" target="_blank">🔍 My Results History</a></li>
-                    <li><a href="results_G11-13.php" target="_blank">🔍 11–13 Grade Results</a></li>
+    <div id="page-exam" class="hidden">
+        <div class="box" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>👤 নাম: <b><span id="display-name"></span></b></div>
+            <div style="color: var(--red); font-size: 20px; font-weight: bold;">সময়: <span id="timer">10:00</span></div>
+        </div>
+        <div id="passage-stable" class="box"><div id="p-text"></div></div>
+        <div class="input-box"><textarea id="t-input" placeholder="Bijoy অথবা Unicode যে কোনো পদ্ধতিতে টাইপ করুন..." oninput="startCount()" onpaste="return false;"></textarea></div>
+        <div style="text-align: right; margin-top: 15px;"><button class="btn-main" style="width: auto; background: var(--green); padding: 10px 40px;" onclick="finishExam()">Go to Finish</button></div>
+    </div>
 
-                    <li><a href="/Weekly_Exam/results.php" target="_blank">🔍 Practical Exam Result</a></li>
-                    
-                </ul>
-            </li>
-
-            <li class="has-sub">
-
-                <a href="javascript:void(0)" onclick="toggleSideDropdown(this)" style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/typing_icon.png" alt="typing fucntion" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>Typing Function</span> <i>▾</i>
-             </a>
-                <ul class="sub-menu">
-                    <li>
-              <a href="typing_function.php" target="_blank">
-                ⏩ Error & Font <span style="background: #02ba11; color: white; font-size: 10px; padding: 1px 5px; border-radius: 3px; font-weight: bold; justify-content: center; align-items: center; text-decoration: none; display: inline-block; vertical-align: middle; display: inline-flex;  margin-left: 2px;">ON-OFF</span>
-              </a>
-                </li>                 
-             </ul>
-            </li>
-
-            <li class="has-sub">
-
-                <a href="javascript:void(0)" onclick="toggleSideDropdown(this)" style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/font_icon.png" alt="Font" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>Font Download</span> <i>▾</i>
-             </a>
-
-                <ul class="sub-menu">
-                    <li><a href="/Font/Shonar.ttf" target="_blank">𝓕 Shonar Bangla</a></li>
-
-                    <li><a href="/Font/Nikosh.ttf" target="_blank">𝓕 Nikosh</a></li>
-
-                    <li><a href="/Font/Kalpurush.ttf" target="_blank">𝓕 Kalpurush</a></li>
-
-                </ul>
-            </li>
-
-            <li class="has-sub">
-
-                <a href="javascript:void(0)" onclick="toggleSideDropdown(this)" style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/pdf_icon.png" alt="PDF Download" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>PDF Sheet</span> <i>▾</i>
-             </a>
-
-                <ul class="sub-menu">
-                    <li><a href="/Sheet_Download/10_TypingSheet_TypingBD.pdf" target="_blank">✅ ১০ টাইপ শীট </a></li>
-
-                    <li><a href="/Sheet_Download/25_TypingSheet_TypingBD.pdf" target="_blank">✅ ২৫ টাইপ শীট</a></li>
-
-                    <li><a href="/BCC_Sheet/bcc_sheet_typingbd.pdf" target="_blank">✅ BCC টাইপ শিট</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="feedback.php" target="_blank" style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/feedback_icon.png" alt="Give Feedback" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>Give Feedback</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="/Whats_New/" target="_blank" style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/new_icon.png" alt="Whats New" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>Whats New!</span>
-                </a>
-            </li>
-
-             <li>
-                <a href="/Upcoming_Update/" target="_blank" style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.8); overflow: hidden; display: inline-block; flex-shrink: 0; background: #fff; line-height: 0;">
-                    <img src="images/icon/update_icon.png" alt="Update" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <span>Upcoming</span>
-                </a>
-            </li>
-<center>
-
-  <span style="
-background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-color: white;
-padding: 12px 12px;
-border-radius: 12px;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-font-weight: 700;
-font-size: 13px;
-letter-spacing: 1px;
-box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-text-transform: uppercase;
-display: inline-block;
-border: 1px solid rgba(255, 255, 255, 0.2);
-    ">
-        Social Media Platform
-    </span>
-
-</center>
-            <li style="margin: 0; padding: 0; list-style: none;">
-
-        <div style="display: flex; justify-content: center; gap: 8px; padding: 5px 0; border-top: 1px solid rgba(255,255,255,0.05); margin: 0;">
-        
-        <a href="https://www.facebook.com/profile.php?id=61587649023882" target="_blank" title="Facebook Page" style="text-decoration: none; display: block; margin: 0; padding: 0; line-height: 0;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; margin: 0; padding: 0; display: block; background: #fff;">
-                <img src="images/icon/facebook_icon.png" alt="Facebook" style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
+    <div id="page-result" class="box hidden">
+        <div class="result-header">🔍 টাইপিং ফলাফল ও বিস্তারিত</div>
+        <div class="result-grid">
+            <div class="card c-green">
+                <h4>তারিখ, ভাষা, সময়</h4>
+                <p><span>🗓️ তারিখ:</span> <span id="r-date"></span></p>
+                <p><span>👤 ভাষা:</span> <span id="r-lang">English</span></p>
+                <p><span>⏱️ মোট সময়: 10:00</span></p>
+                <p><span>⏳ ব্যয়িত সময়:</span> <span id="r-time-taken"></span></p>
             </div>
-        </a>
-
-
-         <a href="https://www.facebook.com/groups/1550825252652329" target="_blank" title="Facebook Group" style="text-decoration: none; display: block; margin: 0; padding: 0; line-height: 0;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; margin: 0; padding: 0; display: block; background: #fff;">
-                <img src="images/icon/facebook_group.png" alt="Facebook" style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
+            <div class="card c-orange">
+                <h4>দক্ষতা, গতি, গণনা</h4>
+                <p><span>🚀 WPM:</span> <b id="r-wpm"></b></p>
+                <p><span>🎯 Accuracy:</span> <b id="r-acc"></b></p>
+                <p><span>⌨️ টাইপ শব্দ:</span> <span id="r-words"></span></p>
+                <p style="border:none; color:gray; font-size:11px;">ƒ গণনা: 5 Stroke = 1 Word হিসেবে</p>
             </div>
-        </a>
-
-        <a href="https://www.youtube.com/@TypingBD" target="_blank" title="YouTube Channel" style="text-decoration: none; display: block; margin: 0; padding: 0; line-height: 0;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; margin: 0; padding: 0; display: block; background: #fff;">
-                <img src="images/icon/youtube_icon.png" alt="YouTube" style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
+            <div class="card c-red">
+                <h4>বিশ্লেষণ</h4>
+                <p><span>📊 Character:</span> <span id="r-char"></span></p>
+                <p><span>✅ সঠিক Character:</span> <span id="r-cor"></span></p>
+                <p><span>❌ ভুল শব্দ:</span> <span id="r-wrong"></span></p>
+                <p><span>📉 ভুলের হার:</span> <span id="r-err"></span></p>
             </div>
-        </a>
-
-        <a href="https://www.linkedin.com/in/typing-bd-937008133" target="_blank" title="Linkedin Page" style="text-decoration: none; display: block; margin: 0; padding: 0; line-height: 0;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; margin: 0; padding: 0; display: block; background: #fff;">
-                <img src="images/icon/linkedin_icon.png" alt="Linkedin" style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
-            </div>
-        </a>
-
-        <a href="about_us.php" target="_blank" title="About Us" style="text-decoration: none; display: block; margin: 0; padding: 0; line-height: 0;">
-            <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.2); overflow: hidden; margin: 0; padding: 0; display: block; background: #fff;">
-                <img src="images/icon/about_icon.png" alt="Linkedin" style="width: 100%; height: 100%; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
-            </div>
-        </a>
-
-            </div>
-        </li>
-        </ul>
-    </aside>
-        <main class="main-content">
-    <div class="content" style="width: 100%; margin: 0; padding: 5px; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; line-height: 1.1;">
-    
-            <div style="width: 100%; background: #ffffff; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.05); border: 1px solid #eef2f7;">
+        </div>
+        <div class="status-banner">🌟 ফলাফল: <div class="status-tag" id="r-status">PASS</div></div>
+        <div style="margin-top:20px;">
+            <div style="font-weight:bold; margin-bottom:5px;">Writing Part (আপনার অংশ):</div>
+            <div id="user-compare-text" style="padding:15px; border:1px solid #ddd; background:#f9f9f9; line-height:1.8; font-size:18px; border-radius:5px; margin-bottom:15px;"></div>
             
-            <div style="background: linear-gradient(135deg, #1a237e, #397dfa); padding: 12px; color: #fff; text-align: center;">
-                <h2 style="margin: 0; font-size: 16px; font-weight: 700;">
-                    ✨ Account Active করুন বা [ ৩ মিনিট টাইপ - বাংলা ও English Trial দিন ]                </h2>
-            </div>
-
-            <div style="padding:14px; background:#f8fafc; border-radius:18px; font-family: sans-serif;">
-
-  <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:14px; justify-content: center;">
-
-    <div style="flex:1; min-width:280px; max-width: 100%; background:#ffffff; border:1px solid #e5e7eb; padding:16px 14px; border-radius:18px; text-align:center; box-shadow:0 8px 24px rgba(15,23,42,.05); box-sizing: border-box;">
-
-      <p style="font-weight:700; color:#0f172a; margin:0 0 12px; font-size:14px; letter-spacing:.4px;">
-        📦 Package (প্যাকেজ) Plan
-      </p>
-
-      <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px;">
-        <span style="background:#eef2ff; color:#3730a3; padding:6px 14px; border-radius:999px; font-weight:700; font-size:14px; display: inline-block;">
-          ৩ মাস · ২৫০ ৳
-        </span>
-        <span style="background:#eef2ff; color:#3730a3; padding:6px 14px; border-radius:999px; font-weight:700; font-size:14px; display: inline-block;">
-          ৬ মাস · ৫০০ ৳
-        </span>
-        <span style="background:#eef2ff; color:#3730a3; padding:6px 16px; border-radius:999px; font-weight:800; font-size:15px; display: inline-block;">
-          ১২ মাস · ১০০০ ৳
-        </span>
-      </div>
-
-      <div style="font-size:13px; color:#475569; line-height: 1.8;">
-        <span style="background:#4f46e5; color:#fff; padding:5px 12px; border-radius:999px; font-weight:600; white-space: nowrap; display: inline-block; margin-bottom: 5px;">
-          Pay & Active অপশনে
-        </span>
-        <span style="margin: 0 4px; display: inline-block;">→</span>
-        <span style="background:#4f46e5; color:#fff; padding:5px 12px; border-radius:999px; font-weight:700; white-space: nowrap; display: inline-block;">
-          Account Active করুন
-        </span>
-      </div>
-    </div>
-
-    <div style="flex:1; min-width:280px; max-width: 100%; background:#ffffff; border:1px solid #e5e7eb; padding:16px 14px; border-radius:18px; text-align:center; box-shadow:0 8px 24px rgba(15,23,42,.05); box-sizing: border-box;">
-
-      <p style="font-weight:700; color:#0f172a; margin:0 0 12px; font-size:14px; letter-spacing:.4px;">
-        📦 Monthly (মাসিক) Plan
-      </p>
-
-      <div style="display:flex; justify-content:center; margin-bottom:12px;">
-        <span style="background:#eef2ff; color:#3730a3; padding:8px 18px; border-radius:999px; font-weight:800; font-size:16px;">
-          ১ মাস · ১০০ ৳
-        </span>
-      </div>
-
-      <div style="font-size:13px; color:#475569; line-height: 1.8;">
-        <span style="background:#4f46e5; color:#fff; padding:5px 12px; border-radius:999px; font-weight:600; white-space: nowrap; display: inline-block; margin-bottom: 5px;">
-          Pay & Active অপশনে
-        </span>
-        <span style="margin: 0 4px; display: inline-block;">→</span>
-        <span style="background:#4f46e5; color:#fff; padding:5px 12px; border-radius:999px; font-weight:700; white-space: nowrap; display: inline-block;">
-          Account Active করুন
-        </span>
-      </div>
-    </div>
-  </div>
-
-<div class="custom-container">
-  <div></div>
-  <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5; text-align: center;">
-    সকল প্ল্যানেই <span style="color: #4f46e5; font-weight: 700;">১ মাস = ৩০ দিন হিসেবে ধরা হয়</span>
-  </p>
-
-  <div style="text-align: right;">
-    <a href="https://www.youtube.com/watch?v=w_qZ9mMDTFo" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; background-color: #e330bf; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
-      <svg style="width: 16px; height: 16px; fill: currentColor;" viewBox="0 0 24 24">
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-      </svg>
-      Video দেখুন কিভাবে Account Active করবেন
-    </a>
-  </div>
-
-</div>
-
-</div>
-
+            <div style="font-weight:bold; margin-bottom:5px;">Main Passage (মূল অনুচ্ছেদ):</div>
+            <div id="original-text-result" style="padding:15px; border:1px solid #ddd; background:#fff; line-height:1.8; font-size:18px; border-radius:5px; color:#444;"></div>
         </div>
+        <center><button class="btn-main" style="width: 200px; margin-top:20px;" onclick="location.reload()">আবার চেষ্টা করুন</button></center>
     </div>
 
-<style>
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
-
-<div class="cards ">
-
-      
-<div class="card premium-card trial-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ ৩ মিনিট টাইপ</span>
-        <span style="background: linear-gradient(135deg, #ed0964, #ed0964) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Trial Now
-    </span> 
-    </h2>
-  <p>আপনার টাইপ শুরু করুন</p>
-      <div class="btn-group">
-  <a href="/3_Trail_Min/index.php?lang=bangla"
-    class="trial-btn bangla-btn" >
-    Bangla
-  </a>
-
-   <a href="/3_Trail_Min/index.php?lang=english" 
-    class="trial-btn english-btn" >
-    English
-  </a>
-</div>
-</div>
-
-
-    <div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-         <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-            <span id="lastUpdate10">--</span>
-        
-    </span>
-    </h2>
-    <p>
-        Total Content: <span id="totalPassage10">0</span>
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
+    <div id="page-admin" class="box hidden">
+        <h2 style="color:var(--blue)">Admin Panel</h2>
+        <div class="box">
+            <h4>প্যাসেজ এডিট:</h4>
+            <textarea id="adm-text" style="height: 60px; width:100%; border:1px solid #ddd;"></textarea><br>
+            <button class="btn-main" style="width: auto;" onclick="saveTxt()">Save Passage</button>
+        </div>
+        <table id="adm-table-container">
+            <thead><tr><th>নাম</th><th>ইউজার</th><th>পাসওয়ার্ড</th><th>মেয়াদ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+            <tbody id="adm-table"></tbody>
+        </table>
+        <button class="btn-main" style="background:#666; margin-top:20px; width:auto" onclick="location.reload()">Logout Admin</button>
     </div>
 </div>
 
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 5 Min</span>
-        <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-           <span id="lastUpdate5">--</span>
-        
-    </span>
-    </h2>
-    <p>
-        Total Content: <span id="totalPassage5">0</span>
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 3 Min</span>
-
-        <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-           <span id="lastUpdate3">--</span>
-        
-    </span>
-    </h2>
-    <p>
-        Total Content: <span id="totalPassage3">0</span>
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-       <style>
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.4; }
-    100% { opacity: 1; }
-}
-.exam-running-text {
-    background-color: #ff0000;
-    color: white;
-    padding: 2px 10px;
-    border-radius: 8px;
-    font-weight: bold;
-    animation: blink 5s infinite;
-}
-</style>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #ff08bd, #941c01) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        ব্যবহারিক পরীক্ষা
-    </span> 
-    </h2>
-    <p id="exam-timer-status">
-        <span id="date-box" style="padding:1px 8px; border-radius:8px;">
-            16-04-2026        </span>
-        <span id="time-box" style="background-color:#02d909; color:#ffffff; padding:1px 8px; border-radius:8px; margin-left:5px;">
-            শুরু: 09:00 AM        </span>
-    </p>
-
-        <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Start Exam
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            All Results
-        </a>
-    </div>
-</div>
 <script>
-function updateExamStatus() {
-    const examTimeStr = "2026-04-16T09:00";
-    if (!examTimeStr) return;
-    const examTime = new Date(examTimeStr).getTime();
-    const currentTime = new Date().getTime();
-    const statusContainer = document.getElementById('exam-timer-status');
-    const twentyFourHours = 24 * 60 * 60 * 1000;
-    if (currentTime >= (examTime + twentyFourHours)) {
-        statusContainer.innerHTML = '<span style="padding:1px 8px; border-radius:8px;">Waiting for Next Exam</span>';
-    } else if (currentTime >= examTime) {
-        statusContainer.innerHTML = '<span class="exam-running-text">Live - পরীক্ষা চলছে</span>';
+    let users = JSON.parse(localStorage.getItem('bcc_final_users')) || [];
+    let passage = localStorage.getItem('bcc_final_text') || "The quick brown fox jumps over the lazy dog.";
+    let adminPass = "admin123";
+    let timeLeft = 600, timerOn = false, timerInt, generatedCode, tempUser;
+    
+    document.getElementById('p-text').innerText = passage;
+
+    function showPage(id) {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
-}
-updateExamStatus();
-setInterval(updateExamStatus, 1000);
-</script>
 
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        গ্রেড ১১-১৩
-    </span> 
-    </h2>
-    <p>
-    <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Total Content: <span id="totalPassage11_13">0</span>
-    </span> 
-    | <span style="font-size: 12px;" id="lastUpdate11_13">--</span>
-</p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-      
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10-5 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Exam System
-    </span> 
-    </h2>
-    <p>
-        আপনার টাইপ শুরু করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            10 Minute
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            5 Minute
-        </a>
-    </div>
-</div>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        BCC প্রশ্নপত্র
-    </span> 
-    </h2>
-    <p>
-    <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Total Content: <span id="totalPassageBCC">0</span>
-    </span> 
-    | <span style="font-size: 12px;" id="lastUpdateBCC">--</span>
-</p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Min & Dept.
-    </span> 
-    </h2>
-    <p>
-    <span class="title-text" style="background: transparent; color: #6dafc7;padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Total Content: <span id="totalPassageMD">0</span>
-    </span> 
-    | <span style="font-size: 12px;" id="lastUpdateMD">--</span>
-</p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        পত্রিকা
-    </span> 
-    </h2>
-    <p>
-    <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Total Content: <span id="totalPassagePaper">0</span>
-    </span> 
-    | <span style="font-size: 12px;" id="lastUpdatePaper">--</span>
-</p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Advanced
-    </span> 
-    </h2>
-    <p>
-    <span class="title-text" style="background: transparent; color: #6dafc7; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Total Content: <span id="totalPassageAdvanced">0</span>
-    </span> 
-    | <span style="font-size: 12px;" id="lastUpdateAdvanced">--</span>
-</p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Unlimited</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Manual Type
-    </span> 
-    </h2>
-    <p>
-        আপনার টাইপ শুরু করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⏲ 10 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        শীট টাইপ
-    </span> 
-    </h2>
-    <p>
-        শীট দেখে টাইপ করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-                class="disabled bangla-btn"
-                onclick="return false;" >
-                Start Type
-            </a>
-
-        <a href="#" 
-                class="disabled english-btn"
-                onclick="return false;" >
-                Sheet <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
-  <polyline points="7 10 12 15 17 10"></polyline>
-  <line x1="12" y1="15" x2="12" y2="3"></line>
-</svg>
-            </a>
-    </div>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">10-5 Min</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Custom Type
-    </span> 
-    </h2>
-    <p>
-        আপনার টাইপ শুরু করুন
-    </p>
-
-    <a href="#" target="_blank"
-                class="disabled bangla-btn"
-                onclick="return false;" >
-                Start Type
-            </a>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Practice</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Basic level
-    </span> 
-    </h2>
-    <p>
-        অনুশীলন শুরু করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Practice</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Compare
-    </span> 
-    </h2>
-    <p>
-        অনুশীলন শুরু করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Practice</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        বাংলা যুক্তবর্ণ
-    </span> 
-    </h2>
-    <p>
-        অনুশীলন শুরু করুন
-    </p>
-
-        <a href="#" 
-                class="disabled bangla-btn"
-                onclick="return false;" >
-                Updating
-            </a>
-</div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Practice</span>
-        <span style="background: linear-gradient(135deg, #00b09b, #54b302) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Exercise
-    </span> 
-    </h2>
-    <p>
-        অনুশীলন শুরু করুন
-    </p>
-
-    <div class="btn-group">
-        <a href="#" target="_blank"
-            class="disabled bangla-btn"
-            onclick="return false;" >
-            Bangla
-        </a>
-
-        <a href="#" target="_blank"
-            class="disabled english-btn"
-            onclick="return false;" >
-            English
-        </a>
-    </div>
-</div>
-
-
-        <div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">Weekly Sheet</span>
-        <span style="background: linear-gradient(135deg, #f5225a, #b630c2) !important; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        16-04-2026    </span> 
-    </h2>
-    <p>
-       শীট ডাউনলোড করুন
-    </p>
-            <a href="sheet/typingsheet.pdf"
-                class="disabled bangla-btn"
-                onclick="return false;"                download>Download Sheet</a>
-                <div class="status-dot"></div>
-        </div>
-
-
-<div class="card premium-card">
-    
-    <h2 class="card-title">
-        <span class="title-time">⚠️ নির্দেশিকা</span>
-        <span style="background: transparent; color: #e0320b; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 14px; margin-right: 5px; display: inline-block; vertical-align: middle;">
-        Update - 2026
-    </span> 
-    </h2>
-    <p>
-        পাশ - র‍্যাংকিং - ভুলের সমাধান
-    </p>
-
-        <a href="#" 
-                class="disabled bangla-btn"
-                onclick="return false;" >
-                Go read
-            </a>
-</div>
-
-    </div>
-    </div>
-    </div>
-</div>
-    <footer>
-        Powered by _ <span>SNYA</span>
-    </footer>
-    <div id="popupModal" onclick="hidePopup()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1000;justify-content:center;align-items:center;">
-        <span class="close" onclick="hidePopup();event.stopPropagation();" style="position:absolute;top:20px;right:30px;font-size:28px;color:#fff;cursor:pointer;font-weight:bold;">&times;</span>
-        <img src="bKash.png" alt="Payment Bkash">
-    </div>
-    <button class="support-btn" onclick="toggleSupport()">💬 Support</button>
-    <a href="ranking.php" target="_blank" class="leaderboard-btn">🏆 Best Top - 10</a>
-    <div id="supportPopup" class="support-popup">
-        <h4>Contact Support</h4>
-        <a href="https://wa.me/8801575068618" target="_blank" class="whatsapp">WhatsApp: 01575068618</a>
-        <a href="https://t.me/typingbdsupport" target="_blank" class="telegram">Telegram: @typingbdsupport</a>
-    </div>
-<script>
-function toggleDropdown(btn){
-    const dropdown = btn.nextElementSibling;
-    const isVisible = dropdown && dropdown.style.display === 'block';
-    document.querySelectorAll('.dropdown-content').forEach(dc=>dc.style.display='none');
-    if (dropdown) dropdown.style.display = isVisible ? 'none' : 'block';
-}
-document.addEventListener('click', function(e){
-    if(!e.target.closest('.dropdown') && !e.target.closest('.dropbtn')){
-        document.querySelectorAll('.dropdown-content').forEach(dc=>dc.style.display='none');
+    function doLogin() {
+        const u = document.getElementById('login-user').value.toLowerCase().trim();
+        const p = document.getElementById('login-pass').value;
+        const found = users.find(x => x.user === u && x.pass === p);
+        if(found) {
+            document.getElementById('display-name').innerText = found.name;
+            showPage('page-exam');
+        } else alert("ভুল তথ্য!");
     }
-});
-function showPopup(){
-    document.getElementById('popupModal').style.display='flex';
-}
-function hidePopup(){
-    document.getElementById('popupModal').style.display='none';
-}
-function showTerms(){
-    document.getElementById('termsModal').style.display='flex';
-}
-function hideTerms(){
-    document.getElementById('termsModal').style.display='none';
-}
-function toggleSupport(){
-    const popup = document.getElementById('supportPopup');
-    popup.style.display = (popup.style.display === 'block') ? 'none' : 'block';
-}
-document.addEventListener('click', function(e){
-    const popup = document.getElementById('supportPopup');
-    if (!e.target.closest('.support-btn') && !e.target.closest('.support-popup') && !e.target.closest('.leaderboard-btn')) {
-        if (popup) popup.style.display = 'none';
-    }
-});
-function recordTrial(type) {
-    event.preventDefault();
-    const btn = event.target;
-    btn.classList.add('disabled');
-    btn.style.pointerEvents = 'none';
-    fetch('save_trial.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'test_type=' + encodeURIComponent(type)
-    })
-    .then(res => res.text())
-    .then(data => {
-        if (data.trim() === 'ok') {
 
-            window.location.href = btn.getAttribute('href');
-        } else {
-            btn.classList.remove('disabled');
-            btn.style.pointerEvents = 'auto';
-            alert('Trail already used!');
+    function doSignup() {
+        const n = document.getElementById('sign-name').value;
+        const u = document.getElementById('sign-user').value.toLowerCase().trim();
+        const p = document.getElementById('sign-pass').value;
+        if(!u.endsWith("@gmail.com")) return alert("শুধুমাত্র Gmail ব্যবহার করুন!");
+        generatedCode = Math.floor(1000 + Math.random() * 9000);
+        tempUser = {name: n, user: u, pass: p};
+        alert("ভেরিফিকেশন কোড: " + generatedCode);
+        document.getElementById('sign-inputs').classList.add('hidden');
+        document.getElementById('verify-div').classList.remove('hidden');
+    }
+
+    function verifyAndFinish() {
+        const code = document.getElementById('verify-code').value;
+        if(code === generatedCode.toString()) {
+            let exp = new Date(); exp.setDate(exp.getDate() + 30);
+            users.push({...tempUser, expiry: exp.getTime()});
+            localStorage.setItem('bcc_final_users', JSON.stringify(users));
+            location.reload();
+        } else alert("ভুল কোড!");
+    }
+
+    function doRecover() {
+        const email = document.getElementById('recover-email').value.toLowerCase().trim();
+        const found = users.find(x => x.user === email);
+        if(found) alert("আপনার পাসওয়ার্ড: " + found.pass);
+        else alert("এই ইমেইলটি নিবন্ধিত নয়!");
+    }
+
+    function checkAdminAccess() {
+        if(document.getElementById('admin-entry-pass').value === adminPass) {
+            document.getElementById('adm-text').value = passage;
+            showPage('page-admin');
+        } else alert("ভুল এডমিন পাসওয়ার্ড!");
+    }
+
+    function startCount() {
+        if(!timerOn) {
+            timerOn = true;
+            timerInt = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if(timeLeft <= 0) finishExam();
+            }, 1000);
         }
-    })
-    .catch(() => {
-        btn.classList.remove('disabled');
-        btn.style.pointerEvents = 'auto';
-        alert('Network error!');
-    });
-}
-function toggleSideDropdown(el){
-    const submenu = el.nextElementSibling;
-    const allSub = document.querySelectorAll('.sub-menu');
-    allSub.forEach(sm=>{
-        if(sm !== submenu) sm.style.display='none';
-    });
-
-    submenu.style.display = (submenu.style.display === 'block') ? 'none' : 'block';
-}
-</script>
-<script>
-        document.addEventListener('cut', function(e) {
-            e.preventDefault();
-        });
-        document.addEventListener('copy', function(e) {
-            e.preventDefault();
-        });
-        document.addEventListener('paste', function(e) {
-            e.preventDefault();
-        });
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.addEventListener('dragstart', event => event.preventDefault());
-        document.addEventListener('drop', event => event.preventDefault()); 
-
-        document.addEventListener('mousedown', function(e) {
-            if (e.button == 2) {
-                e.preventDefault();
-                return false;
-            }
-        }, true);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault();
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-                e.preventDefault();
-            }
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-            }
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'x')) {
-                 e.preventDefault();
-            }
-            
-        }, false);
-    </script>
-    <script>
-    let currentStatus = "hold"; 
-    function checkUserStatus() {
-        fetch('get_status.php')
-            .then(response => response.text())
-            .then(newStatus => {
-                newStatus = newStatus.trim();
-                if (newStatus !== "" && newStatus !== currentStatus) {
-                    location.reload(); 
-                }
-            })
-            .catch(error => console.error('Error fetching status:', error));
     }
-    setInterval(checkUserStatus, 5000);
-</script>
-<script>
-function updateStatus() {
-    const statusBox = document.getElementById('network-status');
-    if (!navigator.onLine) {
-        statusBox.textContent = "Disconnect";
-        statusBox.style.background = "red";
-        return;
+
+    function finishExam() {
+        clearInterval(timerInt);
+        const inp = document.getElementById('t-input').value;
+        const pWords = passage.trim().split(/\s+/);
+        const iWords = inp.trim().split(/\s+/);
+        
+        let correctChars = 0;
+        let wrongWordsCount = 0;
+        let comparisonHTML = "";
+
+        pWords.forEach((word, idx) => {
+            const userWord = iWords[idx] || "";
+            if (userWord === word && word !== "") {
+                comparisonHTML += `<span>${userWord} </span>`;
+                correctChars += word.length + 1; 
+            } else if (userWord !== "") {
+                wrongWordsCount++;
+                comparisonHTML += `<span class="error-highlight">${userWord}</span> `;
+            }
+        });
+
+        const timeSpentSeconds = 600 - timeLeft;
+        const elapsedMins = Math.max(timeSpentSeconds / 60, 0.01);
+        const wpm = ((inp.length / 5) / elapsedMins).toFixed(2);
+        const accuracy = inp.length > 0 ? Math.round((correctChars / inp.length) * 100) : 0;
+
+        document.getElementById('r-date').innerText = new Date().toLocaleDateString();
+        document.getElementById('r-time-taken').innerText = `${Math.floor(timeSpentSeconds/60)}:${(timeSpentSeconds%60).toString().padStart(2,'0')}`;
+        document.getElementById('r-wpm').innerText = wpm;
+        document.getElementById('r-acc').innerText = (accuracy > 100 ? 100 : accuracy) + "%";
+        document.getElementById('r-words').innerText = iWords.filter(w => w !== "").length;
+        document.getElementById('r-char').innerText = inp.length;
+        document.getElementById('r-cor').innerText = correctChars;
+        document.getElementById('r-wrong').innerText = wrongWordsCount;
+        document.getElementById('r-err').innerText = (100 - accuracy < 0 ? 0 : 100 - accuracy) + "%";
+        
+        document.getElementById('user-compare-text').innerHTML = comparisonHTML;
+        document.getElementById('original-text-result').innerText = passage;
+        showPage('page-result');
     }
-    const startTime = Date.now();
-    fetch(window.location.origin + '/favicon.ico', { mode: 'no-cors', cache: 'no-store' })
-    .then(() => {
-        const duration = Date.now() - startTime;
-        if (duration < 100) {
-            statusBox.textContent = "Best";
-            statusBox.style.background = "#4564ff";
-        } else if (duration < 300) {
-            statusBox.textContent = "Medium";
-            statusBox.style.background = "#9f74a6";
-        } else {
-            statusBox.textContent = "Slow";
-            statusBox.style.background = "#ba7632"; 
-        }
-    })
-    .catch(() => {
-        statusBox.textContent = "Disconnect";
-        statusBox.style.background = "red";
-    });
-}
-setInterval(updateStatus, 3000);
-updateStatus();
+
+    function saveTxt() {
+        localStorage.setItem('bcc_final_text', document.getElementById('adm-text').value);
+        location.reload();
+    }
 </script>
-<script src="page/js/passage-stats.js"></script>
 </body>
 </html>
