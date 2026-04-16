@@ -1,43 +1,235 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Official Typing Exam System - Bijoy 52 Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { --blue: #0056b3; --green: #28a745; --red: #dc3545; --bg: #f4f7f6; --teal: #17a2b8; }
+        html, body { height: 100%; margin: 0; font-family: 'Hind Siliguri', 'Kalpurush', Arial, sans-serif; background: var(--bg); overflow-x: hidden; }
+        .container { display: flex; flex-direction: column; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .box { background: #fff; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 10px; }
+        .hidden { display: none !important; }
+        
+        /* Typing Area Styles */
+        #passage-stable { font-size: 26px; line-height: 1.8; height: 280px; overflow-y: auto; text-align: justify; user-select: none; margin-bottom: 20px; font-family: 'Kalpurush', sans-serif; }
+        .input-box { border: 2px solid var(--blue); border-radius: 8px; padding: 15px; background: #fff; margin-top: 10px; }
+        textarea { width: 100%; height: 130px; font-size: 24px; border: none; outline: none; resize: none; font-family: 'Kalpurush', sans-serif; line-height: 1.6; }
+        
+        /* Result Styles (সব আগের মতো রাখা হয়েছে) */
+        .auth-card { max-width: 400px; margin: 50px auto; text-align: center; border-top: 5px solid var(--blue); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        .btn-main { background: var(--blue); color: white; padding: 12px; border: none; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
+        .result-header { color: #004085; text-align: center; font-size: 24px; margin-bottom: 20px; font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .card { padding: 12px; border: 1px solid #ddd; background: #fff; border-radius: 8px; font-size: 14px; }
+        .card h4 { margin: -12px -12px 10px -12px; padding: 10px; font-size: 15px; border-radius: 8px 8px 0 0; border-bottom: 1px solid #eee; }
+        .c-green h4 { color: #28a745; background: #f8fff9; }
+        .c-orange h4 { color: #d35400; background: #fffaf0; }
+        .c-red h4 { color: #dc3545; background: #fff5f5; }
+        .status-banner { background: var(--teal); color: white; text-align: center; padding: 15px; border-radius: 8px; font-size: 22px; font-weight: bold; margin: 20px 0; }
+        .error-highlight { background-color: #ffcccc; color: #cc0000; text-decoration: underline; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+<div class="container">
+    <div id="page-login" class="box auth-card">
+        <h2 style="color: var(--blue);">Bijoy 52 Exam Login</h2>
+        <input type="text" id="login-user" placeholder="Gmail (ইউজারনেম)">
+        <input type="password" id="login-pass" placeholder="পাসওয়ার্ড">
+        <button class="btn-main" onclick="doLogin()">লগইন</button>
+        <p>অ্যাকাউন্ট নেই? <a href="#" onclick="showPage('page-signup')">রেজিস্ট্রেশন করুন</a></p>
+    </div>
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    <div id="page-signup" class="box auth-card hidden">
+        <h2 style="color: var(--green);">রেজিস্ট্রেশন</h2>
+        <div id="sign-inputs">
+            <input type="text" id="sign-name" placeholder="আপনার নাম">
+            <input type="text" id="sign-user" placeholder="Gmail">
+            <input type="password" id="sign-pass" placeholder="পাসওয়ার্ড">
+            <button class="btn-main" id="send-code-btn" style="background: var(--green);" onclick="doSignup()">ভেরিফিকেশন কোড পাঠান</button>
+        </div>
+        <div id="verify-div" class="hidden">
+            <input type="text" id="verify-code" placeholder="৪ ডিজিটের কোড">
+            <button class="btn-main" onclick="verifyAndFinish()">ভেরিফাই করুন</button>
+        </div>
+    </div>
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    <div id="page-exam" class="hidden">
+        <div class="box" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>👤 নাম: <b><span id="display-name"></span></b></div>
+            <div style="color: var(--red); font-size: 20px; font-weight: bold;">সময়: <span id="timer">00:00</span></div>
+        </div>
+        <div id="passage-stable" class="box"><div id="p-text"></div></div>
+        <div class="input-box">
+            <textarea id="t-input" placeholder="বিজয় ক্লাসিক মোডে টাইপ করুন (Ctrl+Alt+B)..." onkeydown="handleBijoyInput(event)" onpaste="return false;"></textarea>
+        </div>
+        <div style="text-align: right; margin-top: 15px;">
+            <button class="btn-main" style="width: auto; background: var(--green); padding: 10px 40px;" onclick="finishExam()">পরীক্ষা শেষ করুন</button>
+        </div>
+    </div>
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    <div id="page-result" class="box hidden">
+        <div class="result-header">🔍 টাইপিং ফলাফল ও বিস্তারিত (Bijoy)</div>
+        <div class="result-grid">
+            <div class="card c-green">
+                <h4>সেশন তথ্য</h4>
+                <p><span>🗓️ তারিখ:</span> <span id="r-date"></span></p>
+                <p><span>👤 ভাষা:</span> <span id="r-lang">Bangla (Bijoy)</span></p>
+                <p><span>⏱️ মোট সময়:</span> <span id="r-total-time-label"></span></p>
+                <p><span>⏳ ব্যয়িত সময়:</span> <span id="r-time-taken"></span></p>
+            </div>
+            <div class="card c-orange">
+                <h4>গতি ও নির্ভুলতা</h4>
+                <p><span>🚀 WPM:</span> <b id="r-wpm"></b></p>
+                <p><span>🎯 Accuracy:</span> <b id="r-acc"></b></p>
+                <p><span>⌨️ টাইপ শব্দ:</span> <span id="r-words"></span></p>
+            </div>
+            <div class="card c-red">
+                <h4>ভুলের বিশ্লেষণ</h4>
+                <p><span>📊 Character:</span> <span id="r-char"></span></p>
+                <p><span>✅ সঠিক Char:</span> <span id="r-cor"></span></p>
+                <p><span>❌ ভুল শব্দ:</span> <span id="r-wrong"></span></p>
+                <p><span>📉 ভুলের হার:</span> <span id="r-err"></span></p>
+            </div>
+        </div>
+        <div class="status-banner">🌟 ফলাফল: <span id="r-status" style="background:white; color:green; padding:2px 15px; border-radius:5px;">--</span></div>
+        <div style="margin-top:20px;">
+            <div style="font-weight:bold;">আপনার টাইপিং বিশ্লেষণ:</div>
+            <div id="user-compare-text" style="padding:15px; border:1px solid #ddd; background:#f9f9f9; line-height:1.8; font-size:22px; border-radius:5px; margin-top:10px;"></div>
+        </div>
+        <center><button class="btn-main" style="width: 200px; margin-top:20px;" onclick="location.reload()">আবার চেষ্টা করুন</button></center>
+    </div>
+</div>
 
-jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+<script>
+    // --- BIJOY 52 TO UNICODE ENGINE ---
+    const bijoyMap = {
+        'a': 'ৃ', 'A': 'র্', 'b': 'ন', 'B': 'ণ', 'c': 'এ', 'C': 'ৈ', 'd': 'ি', 'D': 'ী',
+        'e': 'ড', 'E': 'ঢ', 'f': 'া', 'F': 'অ', 'g': '্', 'G': '।', 'h': 'ব', 'H': 'ভ',
+        'i': 'হ', 'I': 'ঞ', 'j': 'ক', 'J': 'খ', 'k': 'ত', 'K': 'থ', 'l': 'দ', 'L': 'ধ',
+        'm': 'ম', 'M': 'ম', 'n': 'স', 'N': 'ষ', 'o': 'গ', 'O': 'ঘ', 'p': 'ড়', 'P': 'ঢ়',
+        'q': 'ঙ', 'Q': 'ং', 'r': 'প', 'R': 'ফ', 's': 'ু', 'S': 'ূ', 't': 'ট', 'T': 'ঠ',
+        'u': 'জ', 'U': 'ঝ', 'v': 'র', 'V': 'ল', 'w': 'য', 'W': 'য়', 'x': 'ও', 'X': 'ৗ',
+        'y': 'চ', 'Y': 'ছ', 'z': 'ু', 'Z': 'ু', '1': '১', '2': '২', '3': '৩', '4': '৪',
+        '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯', '0': '০', '`': '~', '&': 'ঞ'
+    };
+
+    let preVowels = ['ি', 'ে', 'ৈ']; // বিজয়ে এগুলো আগে টাইপ হয়
+    
+    function handleBijoyInput(event) {
+        if (event.ctrlKey || event.altKey || event.key === "Backspace" || event.key === "Enter") return;
+        
+        event.preventDefault();
+        const char = event.key;
+        const target = event.target;
+        let converted = bijoyMap[char] || char;
+
+        // কার ও যুক্তাক্ষর হ্যান্ডলিং লজিক
+        let start = target.selectionStart;
+        let text = target.value;
+        
+        // রিয়েল টাইমে ইউনিকোড সিকোয়েন্স ঠিক করা (যেমন: ে + ক = কে)
+        if (preVowels.includes(converted)) {
+            // আপাতত বাফারে রাখা বা সরাসরি ইনপুট দেওয়া (সিম্পল ভার্সন)
+            target.value = text.slice(0, start) + converted + text.slice(start);
+        } else {
+            // যদি আগে কোনো কার থাকে তবে সেটিকে সরিয়ে ব্যঞ্জনের পরে নেওয়া
+            let lastChar = text.charAt(start - 1);
+            if (preVowels.includes(lastChar)) {
+                target.value = text.slice(0, start - 1) + converted + lastChar + text.slice(start);
+            } else {
+                target.value = text.slice(0, start) + converted + text.slice(start);
+            }
+        }
+        
+        target.setSelectionRange(target.value.length, target.value.length);
+        startCount(); // টাইমার শুরু করা
+    }
+
+    // --- অন্যান্য ফাংশন (আপনার কোড থেকে নেওয়া ও ফিক্স করা) ---
+    let timeLeft = parseInt(localStorage.getItem('bcc_exam_time')) || 300;
+    let examDuration = timeLeft;
+    let timerOn = false, timerInt;
+    let passage = localStorage.getItem('bcc_final_text') || "প্যাসেজ এখানে যুক্ত করুন।";
+    document.getElementById('p-text').innerText = passage;
+
+    function showPage(id) {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function doLogin() {
+        let users = JSON.parse(localStorage.getItem('bcc_final_users')) || [];
+        const u = document.getElementById('login-user').value.toLowerCase().trim();
+        const p = document.getElementById('login-pass').value;
+        const found = users.find(x => x.user === u && x.pass === p);
+        if(found) {
+            document.getElementById('display-name').innerText = found.name;
+            showPage('page-exam');
+        } else alert("ভুল তথ্য!");
+    }
+
+    function startCount() {
+        if(!timerOn) {
+            timerOn = true;
+            timerInt = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft/60), s = timeLeft%60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                if(timeLeft <= 0) finishExam();
+            }, 1000);
+        }
+    }
+
+    function finishExam() {
+        clearInterval(timerInt);
+        const rawInput = document.getElementById('t-input').value.normalize('NFC');
+        const normPassage = passage.normalize('NFC');
+        
+        const pWords = normPassage.trim().split(/\s+/);
+        const iWords = rawInput.trim().split(/\s+/);
+        
+        let correctChars = 0, wrongWordsCount = 0, comparisonHTML = "";
+        
+        iWords.forEach((word, idx) => {
+            if (word === pWords[idx]) {
+                correctChars += word.length + 1;
+                comparisonHTML += `<span>${word} </span>`;
+            } else {
+                wrongWordsCount++;
+                comparisonHTML += `<span class="error-highlight">${word}</span> `;
+            }
+        });
+
+        const timeSpentMins = (examDuration - timeLeft) / 60 || 0.1;
+        const wpm = ((rawInput.length / 5) / timeSpentMins).toFixed(2);
+        const accuracy = (rawInput.length > 0) ? ((correctChars / rawInput.length) * 100).toFixed(2) : 0;
+        const errorRate = (100 - accuracy).toFixed(2);
+
+        document.getElementById('r-date').innerText = new Date().toLocaleDateString();
+        document.getElementById('r-time-taken').innerText = Math.floor((examDuration-timeLeft)/60) + " মিনিট";
+        document.getElementById('r-total-time-label').innerText = (examDuration/60) + " মিনিট";
+        document.getElementById('r-wpm').innerText = wpm;
+        document.getElementById('r-acc').innerText = accuracy + "%";
+        document.getElementById('r-char').innerText = rawInput.length;
+        document.getElementById('r-cor').innerText = correctChars;
+        document.getElementById('r-wrong').innerText = wrongWordsCount;
+        document.getElementById('r-err').innerText = errorRate + "%";
+        document.getElementById('r-words').innerText = Math.floor(rawInput.length/5);
+        document.getElementById('user-compare-text').innerHTML = comparisonHTML;
+        
+        const statusTag = document.getElementById('r-status');
+        if(parseFloat(wpm) >= 20 && parseFloat(errorRate) <= 5) {
+            statusTag.innerText = "PASS"; statusTag.style.color = "green";
+        } else {
+            statusTag.innerText = "FAIL"; statusTag.style.color = "red";
+        }
+
+        showPage('page-result');
+    }
+</script>
+
+</body>
+</html>
